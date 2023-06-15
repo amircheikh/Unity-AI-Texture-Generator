@@ -13,7 +13,8 @@ using UnityEditor;
 public class GenerateTexture : MonoBehaviour
 {
     private OpenAIAPI api;
-
+    public static bool isGenerating = false;
+    ImageSize imageSize = ImageSize._512;
 
     private Texture2D LoadTextureFromFile(string filePath)
     {
@@ -97,6 +98,18 @@ public class GenerateTexture : MonoBehaviour
 
         // Save the normal map to the new file location
         File.WriteAllBytes(normalMapFilePath, bytes);
+
+        // Import the saved normal map as an asset
+        AssetDatabase.ImportAsset(normalMapFilePath, ImportAssetOptions.ForceSynchronousImport);
+
+        // Get the imported asset
+        TextureImporter textureImporter = (TextureImporter)TextureImporter.GetAtPath(normalMapFilePath);
+
+        // Set the texture type to normal map
+        textureImporter.textureType = TextureImporterType.NormalMap;
+
+        // Apply the changes to the texture importer
+        EditorUtility.SetDirty(textureImporter);
     }
     public static void GenerateHeightMap(Texture2D inputTexture, string filePath, float strength)   //Grayscale conversion technique
     {
@@ -199,18 +212,24 @@ public class GenerateTexture : MonoBehaviour
         return occlusion;
     }
 
-    public async void GenerateImage(string prompt)
+    public async void GenerateImage(string prompt, string apiKey, int imgSizeIndex, float normalMapStrength, float heightMapStrength, float aoMapStrength)
     {
         //Saftey precautions
         if (prompt.EndsWith(" ")) prompt = prompt.Substring(0, prompt.Length - 1);
         if (prompt.Length < 1) return;
 
         Debug.Log("Generating texture.....");
-        api = new OpenAIAPI();
+        api = new OpenAIAPI(apiKey);
         try
         {
-            ImageSize imageSize = ImageSize._512;
+            isGenerating = true;
 
+            //Image size initialized
+            if (imgSizeIndex == 0) imageSize = ImageSize._256;
+            else if (imgSizeIndex == 1) imageSize = ImageSize._512;
+            else if (imgSizeIndex == 2) imageSize = ImageSize._1024;
+
+            //Generation request
             var result = await api.ImageGenerations.CreateImageAsync(new ImageGenerationRequest("The following is a texture for use in a video game. " + prompt, 1, imageSize));
             string imageUrl = result.Data[0].Url;
 
@@ -232,15 +251,16 @@ public class GenerateTexture : MonoBehaviour
             using WebClient webClient = new WebClient();
             webClient.DownloadFile(imageUrl, filePath);
 
-
-            Texture2D baseTexture = LoadTextureFromFile(filePath);
+            
+            Texture2D baseTexture = LoadTextureFromFile(filePath);  //Base texture saved as Texture2D variable
 
             //Generating texture details
-            GenerateNormalMap(baseTexture, filePath, 1);
-            GenerateHeightMap(baseTexture, filePath, 1.2f);
-            GenerateAOMap(baseTexture, filePath, 1, 0.5f, 64);
+            GenerateNormalMap(baseTexture, filePath, normalMapStrength);
+            GenerateHeightMap(baseTexture, filePath, heightMapStrength);
+            GenerateAOMap(baseTexture, filePath, 1, aoMapStrength, 64);
 
             Debug.Log("Texture generated successfully!");
+            isGenerating = false;
             AssetDatabase.Refresh();    //Refreshes assets
 
         }
