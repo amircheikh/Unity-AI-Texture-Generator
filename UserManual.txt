@@ -1,0 +1,12 @@
+Thank you for downloading Amir's AI Texture Generator!
+
+Follow the steps below to use this tool properly:
+1.	Click on the "Texture Generator" prefab. Do not put it in your scene.
+2.	Enter your OpenAI API key. You can find it at: https://platform.openai.com/account/api-keys
+3.	Enter a prompt for the texture you want to generate.
+		a. Example: "Oak tree bark, realistic"
+		b. Note: All prompts have the string "The following is a texture for use in a video game." appended automatically to the beginning of your prompt
+4.	Change the strength for each texture map to increase their intensity.
+5.	Click generate and wait for your result.
+6.	The textures will be outputted to a folder in the same directory as the prefab.
+Enjoy!

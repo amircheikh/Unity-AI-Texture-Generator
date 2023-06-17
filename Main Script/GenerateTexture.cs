@@ -47,6 +47,8 @@ public class GenerateTexture : MonoBehaviour
     }
     public void GenerateNormalMap(Texture2D inputTexture, string filePath, float strength)  //Sobel filter technique
     {
+        if (strength == 0) return;
+
         // Calculate the pixel step size in UV space
         float stepSizeU = 1.0f / inputTexture.width;
         float stepSizeV = 1.0f / inputTexture.height;
@@ -113,6 +115,8 @@ public class GenerateTexture : MonoBehaviour
     }
     public static void GenerateHeightMap(Texture2D inputTexture, string filePath, float strength)   //Grayscale conversion technique
     {
+        if (strength == 0) return;
+
         int width = inputTexture.width;
         int height = inputTexture.height;
 
@@ -141,6 +145,8 @@ public class GenerateTexture : MonoBehaviour
 
     public void GenerateAOMap(Texture2D inputTexture, string filePath, float sampleRadius, float bias, int sampleCount) //SSAO technique
     {
+        if (bias == 0) return; 
+
         // Create a new texture to store the AO map
         Texture2D aoMap = new Texture2D(inputTexture.width, inputTexture.height, TextureFormat.RGB24, false);
 
@@ -215,8 +221,10 @@ public class GenerateTexture : MonoBehaviour
     public async void GenerateImage(string prompt, string apiKey, int imgSizeIndex, float normalMapStrength, float heightMapStrength, float aoMapStrength)
     {
         //Saftey precautions
-        if (prompt.EndsWith(" ")) prompt = prompt.Substring(0, prompt.Length - 1);
-        if (prompt.Length < 1) return;
+        while (prompt.EndsWith(" ")) prompt = prompt.Substring(0, prompt.Length - 1);   //Removes spaces from end of prompt
+        if (prompt.Length < 1) return;  //Returns when prompt doesn't exist
+        string textureName = prompt;    //The files and folders will have this name
+        if (textureName.Length > 55) textureName = textureName.Substring(0, 55);    //Shortens the filenames so they don't end up too long. IDK what the limit should be. 55 sounds good though
 
         Debug.Log("Generating texture.....");
         api = new OpenAIAPI(apiKey);
@@ -235,15 +243,15 @@ public class GenerateTexture : MonoBehaviour
 
             string prefabPath = Path.GetDirectoryName(AssetDatabase.GetAssetPath(this));
 
-            string fileName = prompt + ".png";
+            string fileName = textureName + ".png";
 
             //Creates textures folder
             string textureFolderPath = Path.Combine(prefabPath, "Textures");
             if (!Directory.Exists(textureFolderPath)) AssetDatabase.CreateFolder(prefabPath, "Textures");
 
             //Creates Generated texture folder
-            string generatedTextureFolderPath = Path.Combine(textureFolderPath, prompt);
-            if (!Directory.Exists(generatedTextureFolderPath)) AssetDatabase.CreateFolder(textureFolderPath, prompt);
+            string generatedTextureFolderPath = Path.Combine(textureFolderPath, textureName);
+            if (!Directory.Exists(generatedTextureFolderPath)) AssetDatabase.CreateFolder(textureFolderPath, textureName);
 
             string filePath = Path.Combine(generatedTextureFolderPath, fileName);   //Path to final file
 
@@ -254,7 +262,7 @@ public class GenerateTexture : MonoBehaviour
             
             Texture2D baseTexture = LoadTextureFromFile(filePath);  //Base texture saved as Texture2D variable
 
-            //Generating texture details
+            //Generating texture details. Details won't generate if strength is set to 0
             GenerateNormalMap(baseTexture, filePath, normalMapStrength);
             GenerateHeightMap(baseTexture, filePath, heightMapStrength);
             GenerateAOMap(baseTexture, filePath, 1, aoMapStrength, 64);
@@ -266,6 +274,7 @@ public class GenerateTexture : MonoBehaviour
         }
         catch (Exception e)
         {
+            isGenerating = false;
             Debug.Log("Error occurred in generating texture: " + e);
         }
     }
