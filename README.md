@@ -6,8 +6,9 @@ A video I made showcasing this project: https://www.youtube.com/watch?v=j_V2LVeX
 ## Asset store link
 Pending approval!
 ## Installation
-1. Clone this repo or download it as a zip
-2. Place the files in a folder inside your **Assets** folder
+1. Install the latest version (or version 3.2.1) of _com.unity.nuget.newtonsoft-json_ through the Unity Package Manager. Instructions: https://github.com/jilleJr/Newtonsoft.Json-for-Unity/wiki/Install-official-via-UPM
+2. Clone this repo or download it as a zip
+3. Place the files in a folder inside your **Assets** folder
 ## Usage
 1. Click on the "**Texture Generator**" prefab. Do not put it in your scene.
 2. Enter your OpenAI API key. You can find it at: https://platform.openai.com/account/api-keys
@@ -19,5 +20,5 @@ Pending approval!
 6. The textures will be outputted to a folder in the same directory as the prefab.
 
 
-I am not affiliated with OpenAI and this project is not endorsed or supported by them.\
+I am not affiliated with OpenAI or Unity and this project is not endorsed or supported by them.\
 Enjoy!
