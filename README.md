@@ -1,10 +1,10 @@
 # Unity-AI-Texture-Generator
 This project uses OpenAI's DALL·E 2 to generate textures directly from the Unity Editor.
-The API calls are made directly in game by using OkGoDoIt/OpenAI-API-dotnet, a C# OpenAI sdk.
+The API calls are made directly in game by using OkGoDoIt/OpenAI-API-dotnet, a C# OpenAI sdk. Now available on the Unity Asset Store!
 ## Showcase video
 A video I made showcasing this project: https://www.youtube.com/watch?v=j_V2LVeXV4k
 ## Asset store link
-Pending approval!
+Download for free from the official Unity Asset Store: https://assetstore.unity.com/packages/tools/generative-ai/amir-s-ai-texture-generator-258109
 ## Installation
 1. Install the latest version (or version 3.2.1) of _com.unity.nuget.newtonsoft-json_ through the Unity Package Manager. Instructions: https://github.com/jilleJr/Newtonsoft.Json-for-Unity/wiki/Install-official-via-UPM
 2. Clone this repo or download it as a zip
